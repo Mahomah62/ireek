@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatGPT - Anything Useful</title>
+  <style>
+    body { font-family: sans-serif; padding:20px; background:#f0f0f0; }
+    .chat-box{max-width:800px;margin:0 auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+    textarea{width:100%;height:120px;padding:10px;margin-bottom:10px;}
+    button{padding:10px 16px;background:#1976d2;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+    .response{white-space:pre-wrap;background:#f9f9f9;padding:12px;border-radius:8px;margin-top:12px;}
+  </style>
+</head>
+<body>
+  <div class="chat-box">
+    <h1>ChatGPT (دمو)</h1>
+    <textarea id="prompt" placeholder="متن یا سؤال خود را وارد کنید..."></textarea>
+    <button id="send">ارسال</button>
+    <div id="out" class="response" style="display:none"></div>
+  </div>
+  <script>
+    document.getElementById('send').addEventListener('click', async () => {
+      const prompt = document.getElementById('prompt').value.trim();
+      if(!prompt) return alert('متن را وارد کنید');
+      document.getElementById('out').style.display = 'block';
+      document.getElementById('out').textContent = 'در حال ارسال...';
+      try {
+        const res = await fetch('/api/openai', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ prompt })
+        });
+        const j = await res.json();
+        document.getElementById('out').textContent = j.choices?.[0]?.message?.content ?? JSON.stringify(j);
+      } catch(e) {
+        document.getElementById('out').textContent = 'خطا: ' + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
